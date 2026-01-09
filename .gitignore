@@ -1,0 +1,13 @@
+# Environment variables
+.env
+
+# Data volumes
+prometheus_data/
+grafana_data/
+
+# Docker
+docker-compose.override.yml
+
+# OS
+.DS_Store
+Thumbs.db
