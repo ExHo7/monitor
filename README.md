@@ -35,25 +35,50 @@ pveum aclmod / -user monitoring@pve -role PVEAuditor
 
 ### 2. Configuration de la stack
 
-Copiez le fichier d'exemple et configurez vos variables :
+#### a) Configuration Grafana (.env)
 
 ```bash
 cp .env.example .env
 nano .env
 ```
 
-Modifiez les valeurs suivantes dans le fichier `.env` :
+Modifiez le mot de passe admin dans le fichier `.env` :
 
 ```env
 # Identifiants Grafana (modifiez le mot de passe)
 GRAFANA_ADMIN_USER=admin
 GRAFANA_ADMIN_PASSWORD=votre_mot_de_passe_securise
+```
 
-# Configuration Proxmox
-PVE_HOST=https://IP_DE_VOTRE_PROXMOX:8006
-PVE_USER=monitoring@pve
-PVE_PASSWORD=mot_de_passe_utilisateur_monitoring
-PVE_VERIFY_SSL=false
+#### b) Configuration Proxmox Exporter (pve.yml)
+
+```bash
+cp prometheus/pve.yml.example prometheus/pve.yml
+nano prometheus/pve.yml
+```
+
+Configurez les identifiants Proxmox :
+
+```yaml
+default:
+  user: monitoring@pve
+  password: votre_mot_de_passe_monitoring
+  verify_ssl: false
+```
+
+#### c) Configuration de l'IP Proxmox (prometheus.yml)
+
+```bash
+nano prometheus/prometheus.yml
+```
+
+Trouvez la section `job_name: 'proxmox'` et remplacez `192.168.1.23:8006` par l'IP et le port de votre serveur Proxmox :
+
+```yaml
+  - job_name: 'proxmox'
+    static_configs:
+      - targets:
+        - 192.168.1.100:8006  # CHANGEZ CETTE IP
 ```
 
 ### 3. Démarrer la stack
@@ -201,9 +226,20 @@ Dans `docker-compose.yml`, modifiez la ligne :
 
 ### Proxmox Exporter ne se connecte pas
 
-1. Vérifiez que l'URL Proxmox est correcte dans `.env`
-2. Vérifiez que l'utilisateur a les bonnes permissions
-3. Consultez les logs : `docker-compose logs proxmox-exporter`
+1. Vérifiez que l'IP Proxmox est correcte dans `prometheus/prometheus.yml`
+2. Vérifiez les identifiants dans `prometheus/pve.yml`
+3. Vérifiez que l'utilisateur a les bonnes permissions sur Proxmox
+4. Consultez les logs : `docker-compose logs proxmox-exporter`
+5. Testez manuellement l'endpoint :
+   ```bash
+   curl "http://localhost:9221/pve?target=192.168.1.23:8006&module=default"
+   ```
+
+### Erreur "401 Unauthorized"
+
+- Vérifiez l'utilisateur et le mot de passe dans `prometheus/pve.yml`
+- Vérifiez que l'utilisateur `monitoring@pve` existe sur Proxmox
+- Vérifiez les permissions : `pveum aclmod / -user monitoring@pve -role PVEAuditor`
 
 ### Grafana ne démarre pas
 
@@ -214,7 +250,11 @@ Dans `docker-compose.yml`, modifiez la ligne :
 
 1. Vérifiez la configuration : http://localhost:9090/targets
 2. Tous les targets doivent être "UP"
-3. Si un target est "DOWN", vérifiez les logs du service concerné
+3. Si le target "proxmox" est "DOWN", vérifiez :
+   - L'IP dans `prometheus/prometheus.yml`
+   - Les logs : `docker-compose logs proxmox-exporter`
+   - Que le serveur Proxmox est accessible
+4. Testez une requête Prometheus : `pve_up` ou `pve_version_info`
 
 ## Sécurité
 

@@ -43,12 +43,9 @@ services:
     container_name: proxmox-exporter
     restart: unless-stopped
     volumes:
-      - ./prometheus/pve.yml:/etc/pve.yml:ro
+      - ./prometheus/pve.yml:/etc/prometheus/pve.yml:ro
     ports:
       - "9221:9221"
-    command:
-      - pve_exporter
-      - /etc/pve.yml
     networks:
       - monitoring
 
