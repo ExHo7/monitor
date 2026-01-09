@@ -28,13 +28,6 @@ scrape_configs:
     metrics_path: /pve
     params:
       module: [default]
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: __param_target
-      - source_labels: [__param_target]
-        target_label: instance
-      - target_label: __address__
-        replacement: proxmox-exporter:9221
 
   # Node Exporter - Métriques système
   - job_name: 'node'

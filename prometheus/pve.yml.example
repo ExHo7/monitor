@@ -1,0 +1,20 @@
+# Configuration pour Proxmox VE Exporter
+# Documentation: https://github.com/prometheus-pve/prometheus-pve-exporter
+
+# Copiez ce fichier vers pve.yml et configurez vos informations Proxmox
+# cp prometheus/pve.yml.example prometheus/pve.yml
+
+default:
+  # Adresse de votre serveur Proxmox
+  # Format: https://IP_OU_HOSTNAME:8006
+  # Exemple: https://192.168.1.100:8006
+  user: monitoring@pve
+  password: CHANGEME_PASSWORD
+  # Vérification SSL (false si certificat auto-signé)
+  verify_ssl: false
+
+# Vous pouvez ajouter plusieurs serveurs Proxmox :
+# proxmox2:
+#   user: monitoring@pve
+#   password: AUTRE_PASSWORD
+#   verify_ssl: false

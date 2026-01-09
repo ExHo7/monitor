@@ -23,15 +23,26 @@ if [ ! -f .env ]; then
     echo "📝 Copie de .env.example vers .env..."
     cp .env.example .env
     echo ""
-    echo "⚠️  IMPORTANT : Éditez le fichier .env avec vos informations Proxmox !"
+    echo "✅ Fichier .env créé"
+fi
+
+# Vérifier si le fichier pve.yml existe
+if [ ! -f prometheus/pve.yml ]; then
+    echo "⚠️  Le fichier prometheus/pve.yml n'existe pas."
+    echo "📝 Copie de prometheus/pve.yml.example vers prometheus/pve.yml..."
+    cp prometheus/pve.yml.example prometheus/pve.yml
     echo ""
-    echo "Ouvrez le fichier .env et configurez :"
+    echo "⚠️  IMPORTANT : Éditez le fichier prometheus/pve.yml avec vos informations Proxmox !"
+    echo ""
+    echo "Ouvrez le fichier prometheus/pve.yml et configurez :"
+    echo "  - user: monitoring@pve"
+    echo "  - password: votre_mot_de_passe"
+    echo "  - Ajoutez l'URL de votre serveur Proxmox dans Prometheus"
+    echo ""
+    echo "Éditez aussi .env pour :"
     echo "  - GRAFANA_ADMIN_PASSWORD"
-    echo "  - PVE_HOST (ex: https://192.168.1.100:8006)"
-    echo "  - PVE_USER (ex: monitoring@pve)"
-    echo "  - PVE_PASSWORD"
     echo ""
-    read -p "Appuyez sur Entrée une fois le fichier .env configuré..."
+    read -p "Appuyez sur Entrée une fois les fichiers configurés..."
 fi
 
 echo "🚀 Démarrage de la stack de monitoring..."
